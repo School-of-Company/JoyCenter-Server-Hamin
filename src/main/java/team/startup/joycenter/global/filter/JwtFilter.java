@@ -22,6 +22,18 @@ public class JwtFilter extends OncePerRequestFilter {
     private final TokenParser tokenParser;
 
     @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String uri = request.getRequestURI();
+
+        return uri.startsWith("/oauth2/")
+                || uri.startsWith("/login/")
+                || uri.startsWith("/error")
+                || uri.equals("/")
+                || uri.startsWith("/swagger-ui/")
+                || uri.startsWith("/v3/api-docs");
+    }
+
+    @Override
     protected void doFilterInternal(
             HttpServletRequest request,
             HttpServletResponse response,
