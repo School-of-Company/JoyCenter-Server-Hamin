@@ -3,8 +3,9 @@ package team.startup.joycenter.global.auth;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import team.startup.joycenter.domain.member.entity.Member;
 
-import java.lang.reflect.Member;
+
 import java.util.Collection;
 import java.util.List;
 
