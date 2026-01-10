@@ -12,7 +12,7 @@ import java.io.IOException;
 @Component
 public class OAuth2FailureHandler implements AuthenticationFailureHandler {
 
-    @Value("${spring.oauth-url.failure-url}") private String REDIRECT_URI;
+    @Value("${app.oauth.failure-url}") private String REDIRECT_URI;
 
     @Override
     public void onAuthenticationFailure(

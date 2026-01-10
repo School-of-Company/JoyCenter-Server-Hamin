@@ -28,7 +28,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     private final RefreshTokenRepository refreshTokenRepository;
     private final MemberRepository memberRepository;
 
-    @Value("${spring.oauth-url.success-url}") private String REDIRECT_URI;
+    @Value("${app.oauth.success-url}") private String REDIRECT_URI;
 
     @Override
     public void onAuthenticationSuccess(
@@ -54,7 +54,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
         response.setHeader("Authorization", "Bearer " + accessToken);
 
-        Cookie refreshCookie = new Cookie("refreshToken", refreshToken);
+        Cookie refreshCookie = new Cookie("refreshToken", "Bearer " + refreshToken);
         refreshCookie.setHttpOnly(true);
         refreshCookie.setSecure(false);
         refreshCookie.setPath("/");
