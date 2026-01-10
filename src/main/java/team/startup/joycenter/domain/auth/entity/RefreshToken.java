@@ -7,7 +7,7 @@ import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.index.Indexed;
 import team.startup.joycenter.global.security.jwt.JwtProvider;
 
-@RedisHash(value = "gami_refreshToken", timeToLive = JwtProvider.REFRESH_TOKEN_TIME)
+@RedisHash(value = "joycenter_refreshToken", timeToLive = JwtProvider.REFRESH_TOKEN_TIME)
 @Getter
 @Builder
 public class RefreshToken {

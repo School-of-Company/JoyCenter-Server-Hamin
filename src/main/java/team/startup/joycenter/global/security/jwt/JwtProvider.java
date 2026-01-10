@@ -19,8 +19,8 @@ import java.util.Date;
 public class JwtProvider {
 
     private final JwtProperties jwtProperties;
-    private static final long ACCESS_TOKEN_TIME = 60L * 60 * 24;
-    public static final long REFRESH_TOKEN_TIME = 60L * 60 * 24 * 7;
+    private static final long ACCESS_TOKEN_TIME = 60L * 60 * 24 * 1000;
+    public static final long REFRESH_TOKEN_TIME = 60L * 60 * 24 * 7 * 1000;
 
     public Key getAccessKey() {
         return Keys.hmacShaKeyFor(jwtProperties.getAccessSecret().getBytes(StandardCharsets.UTF_8));
@@ -30,22 +30,22 @@ public class JwtProvider {
         return Keys.hmacShaKeyFor(jwtProperties.getRefreshSecret().getBytes(StandardCharsets.UTF_8));
     }
 
-    public String generateAccessToken(String email) {
+    public String generateAccessToken(Long memberId) {
         Date expiry = new Date(System.currentTimeMillis() + ACCESS_TOKEN_TIME);
 
         return Jwts.builder()
-                .setSubject(email)
+                .setSubject(String.valueOf(memberId))
                 .setIssuedAt(new Date())
                 .setExpiration(expiry)
                 .signWith(getAccessKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    public String generateRefreshToken(String email) {
+    public String generateRefreshToken(Long memberId) {
         Date expiry = new Date(System.currentTimeMillis() + REFRESH_TOKEN_TIME);
 
         return Jwts.builder()
-                .setSubject(email)
+                .setSubject(String.valueOf(memberId))
                 .setExpiration(expiry)
                 .signWith(getRefreshKey(), SignatureAlgorithm.HS256)
                 .compact();
@@ -73,13 +73,21 @@ public class JwtProvider {
         }
     }
 
-    public long getExpiration(String token) {
+    public Long getSubject(String token) {
         Claims claims = Jwts.parserBuilder()
-                .setSigningKey(getAccessKey())
+                .setSigningKey(getRefreshKey())
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
+        Long subject = Long.valueOf(claims.getSubject());
+        return subject;
+    }
 
-        return claims.getExpiration().getTime() - System.currentTimeMillis();
+    public long getAccessTokenTime() {
+        return ACCESS_TOKEN_TIME;
+    }
+
+    public long getRefreshTokenTime() {
+        return REFRESH_TOKEN_TIME;
     }
 }

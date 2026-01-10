@@ -58,21 +58,22 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             }
         }
 
-        Member member = null;
-
-        if (email != null) {
-            member = memberRepository.findByEmail(email).orElse(null);
+        if (providerId == null) {
+            throw new IllegalArgumentException("providerId is null");
         }
 
-        if (member == null) {
-            member = memberRepository.save(
-                    Member.builder()
-                            .provider(provider)
-                            .providerId(providerId)
-                            .email(email)
-                            .build()
-            );
-        }
+        final String finalProvider = provider;
+        final String finalProviderId = providerId;
+        final String finalEmail = email;
+
+        Member member = memberRepository.findByProviderAndProviderId(provider, providerId)
+                .orElseGet(() -> memberRepository.save(
+                        Member.builder()
+                                .provider(finalProvider)
+                                .providerId(finalProviderId)
+                                .email(finalEmail)
+                                .build()
+                ));
 
         attributes.put("memberId", member.getId());
         if (email != null) {
@@ -82,7 +83,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         return new DefaultOAuth2User(
                 oAuth2User.getAuthorities(),
                 attributes,
-                userNameAttributeName
+                "memberId"
         );
     }
 }
