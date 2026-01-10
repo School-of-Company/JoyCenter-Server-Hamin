@@ -1,0 +1,22 @@
+server:
+  port: ${SERVER_PORT:8080}
+
+spring:
+  datasource:
+    url: ${DB_URL:?DB_URL is required}
+    username: ${DB_USERNAME:?DB_USERNAME is required}
+    password: ${DB_PASSWORD:?DB_PASSWORD is required}
+    driver-class-name: ${DB_DIALECT}
+
+  data:
+    redis:
+      host: ${REDIS_HOST:?REDIS_HOST is required}
+      port: ${REDIS_PORT:6379}
+
+  jpa:
+    hibernate:
+      ddl-auto: ${DDL_AUTO:validate}
+
+logging:
+  level:
+    org.hibernate.SQL: info

@@ -9,6 +9,7 @@ public enum ErrorCode {
 
     EXPIRED_TOKEN(401, "토큰이 만료되었습니다."),
     INVALID_TOKEN(401, "유효하지 않은 토큰입니다."),
+    UNAUTHORIZED(401, "이메일 또는 비밀번호가 잘못되었습니다."),
 
     NOT_FOUND_MEMBER(404, "존재하지 않는 사용자입니다.");
 

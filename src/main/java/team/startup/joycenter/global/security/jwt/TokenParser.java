@@ -35,8 +35,8 @@ public class TokenParser {
 
     public Authentication parseAuthentication(String token) {
         Claims claims = parseClaims(token);
-        String email = claims.getSubject();
-        UserDetails principal = memberDetailsService.loadUserByUsername(email);
+        String memberId = claims.getSubject();
+        UserDetails principal = memberDetailsService.loadUserByUsername(memberId);
 
         return new UsernamePasswordAuthenticationToken(
                 principal,
@@ -48,13 +48,6 @@ public class TokenParser {
         String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_TYPE)) {
             return bearerToken.substring(BEARER_TYPE.length());
-        }
-        return null;
-    }
-
-    public String parseRefreshToken(String refreshToken) {
-        if (refreshToken != null && refreshToken.startsWith(BEARER_TYPE)) {
-            return refreshToken.substring(BEARER_TYPE.length());
         }
         return null;
     }

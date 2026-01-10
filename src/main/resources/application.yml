@@ -1,15 +1,6 @@
-server:
-  port: ${SERVER_PORT:8080}
-
 spring:
   application:
     name: joycenter
-
-  datasource:
-    url: ${DB_URL:jdbc:mysql://localhost:3306/joycenter}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
-    driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
     open-in-view: false
@@ -18,29 +9,24 @@ spring:
     properties:
       hibernate:
         dialect: ${DB_DIALECT:org.hibernate.dialect.MySQLDialect}
-        format_sql: true
 
   security:
     oauth2:
       client:
         registration:
           google:
-            client-id: ${GOOGLE_ID}
-            client-secret: ${GOOGLE_SECRET}
-            redirect-uri: ${GOOGLE_URI:http://localhost:8080/login/oauth2/code/google}
-            scope:
-              - email
-              - profile
+            client-id: ${GOOGLE_ID:?GOOGLE_ID is required}
+            client-secret: ${GOOGLE_SECRET:?GOOGLE_SECRET is required}
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            scope: [ email, profile ]
 
           kakao:
-            client-id: ${KAKAO_ID}
-            client-secret: ${KAKAO_SECRET:}
-            redirect-uri: ${KAKAO_URI:http://localhost:8080/login/oauth2/code/kakao}
+            client-id: ${KAKAO_CLIENT_ID:?KAKAO_CLIENT_ID is required}
+            client-secret: ${KAKAO_CLIENT_SECRET:?KAKAO_CLIENT_SECRET is required}
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
             authorization-grant-type: authorization_code
             client-authentication-method: client_secret_post
-            scope:
-              - profile_nickname
-              - account_email
+            scope: [ account_email ]
 
         provider:
           kakao:
@@ -49,9 +35,7 @@ spring:
             user-info-uri: https://kapi.kakao.com/v2/user/me
             user-name-attribute: id
 
-logging:
-  level:
-    org.hibernate.SQL: debug
-    org.hibernate.orm.jdbc.bind: trace
-    org.springframework.jdbc.core: debug
-    org.springframework.jdbc.core.StatementCreatorUtils: trace
+app:
+  oauth:
+    success-url: ${OAUTH_SUCCESS_URL:?OAUTH_SUCCESS_URL is required}
+    failure-url: ${OAUTH_FAILURE_URL:?OAUTH_FAILURE_URL is required}
