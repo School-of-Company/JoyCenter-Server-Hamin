@@ -7,5 +7,5 @@ import team.startup.joycenter.domain.member.entity.Member;
 import java.util.Optional;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
-    Optional<Member> findByEmail(String email);
+    Optional<Member> findByProviderAndProviderId(String findByProvider, String ProviderId);
 }
