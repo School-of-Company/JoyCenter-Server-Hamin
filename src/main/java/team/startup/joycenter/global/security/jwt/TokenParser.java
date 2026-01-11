@@ -3,6 +3,7 @@ package team.startup.joycenter.global.security.jwt;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -40,7 +41,8 @@ public class TokenParser {
 
         return new UsernamePasswordAuthenticationToken(
                 principal,
-                ""
+                "",
+                principal.getAuthorities()
         );
     }
 
@@ -48,6 +50,16 @@ public class TokenParser {
         String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_TYPE)) {
             return bearerToken.substring(BEARER_TYPE.length());
+        }
+        return getCookieValue(request, "accessToken");
+    }
+
+    private String getCookieValue(HttpServletRequest request, String name) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null) return null;
+
+        for (Cookie c : cookies) {
+            if (name.equals(c.getName())) return c.getValue();
         }
         return null;
     }
