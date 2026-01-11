@@ -39,3 +39,7 @@ app:
   oauth:
     success-url: ${OAUTH_SUCCESS_URL:?OAUTH_SUCCESS_URL is required}
     failure-url: ${OAUTH_FAILURE_URL:?OAUTH_FAILURE_URL is required}
+
+  cookie:
+    secure: false
+    same-site: Lax

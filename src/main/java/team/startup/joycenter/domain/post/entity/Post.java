@@ -29,6 +29,9 @@ public class Post {
     @JoinColumn(name = "author_id")
     private Member author;
 
+    @Column(name = "auth_name")
+    private String authorName;
+
     @Column(name = "title", nullable = false)
     private String title;
 

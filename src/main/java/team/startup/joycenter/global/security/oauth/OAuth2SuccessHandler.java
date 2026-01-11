@@ -6,6 +6,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -18,6 +20,7 @@ import team.startup.joycenter.domain.member.repository.MemberRepository;
 import team.startup.joycenter.global.security.jwt.JwtProvider;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Map;
 
 @Component
@@ -29,6 +32,12 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     private final MemberRepository memberRepository;
 
     @Value("${app.oauth.success-url}") private String REDIRECT_URI;
+
+    @Value("${app.cookie.secure:false}")
+    private boolean cookieSecure;
+
+    @Value("${app.cookie.same-site:Lax}")
+    private String sameSite;
 
     @Override
     public void onAuthenticationSuccess(
@@ -52,14 +61,24 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
                 .token(refreshToken)
                 .build());
 
-        response.setHeader("Authorization", "Bearer " + accessToken);
+        ResponseCookie accessCookie = ResponseCookie.from("accessToken", accessToken)
+                .httpOnly(true)
+                .secure(cookieSecure)
+                .path("/")
+                .maxAge(60 * 60 * 24)
+                .sameSite(sameSite)
+                .build();
 
-        Cookie refreshCookie = new Cookie("refreshToken", "Bearer " + refreshToken);
-        refreshCookie.setHttpOnly(true);
-        refreshCookie.setSecure(false);
-        refreshCookie.setPath("/");
-        refreshCookie.setMaxAge(60 * 60 * 24 * 7);
-        response.addCookie(refreshCookie);
+        ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", refreshToken)
+                .httpOnly(true)
+                .secure(cookieSecure)
+                .path("/")
+                .maxAge(60 * 60 * 24 * 7)
+                .sameSite(sameSite)
+                .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
 
         response.sendRedirect(REDIRECT_URI);
     }

@@ -59,6 +59,9 @@ public class SecurityConfig {
                                         "/login/**"
                                 ).permitAll()
                                 .requestMatchers(HttpMethod.PATCH, "/api/auth/reissue").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/api/post").authenticated()
+                                .requestMatchers(HttpMethod.GET, "/api/post/{postId}").authenticated()
+                                .requestMatchers(HttpMethod.GET, "/api/post/all").permitAll()
                                 .anyRequest()
                                 .denyAll()
 

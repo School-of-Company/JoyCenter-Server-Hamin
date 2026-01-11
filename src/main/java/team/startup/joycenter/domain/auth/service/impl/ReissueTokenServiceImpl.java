@@ -4,6 +4,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import team.startup.joycenter.domain.auth.dto.response.TokenResponse;
 import team.startup.joycenter.domain.auth.entity.RefreshToken;
 import team.startup.joycenter.domain.auth.exception.UnauthorizedException;
@@ -25,6 +26,7 @@ public class ReissueTokenServiceImpl implements ReissueTokenService {
     private final MemberRepository memberRepository;
 
     @Override
+    @Transactional
     public TokenResponse execute(String refreshToken, HttpServletResponse response) {
         if (!jwtProvider.validateRefreshToken(refreshToken)) {
             throw new UnauthorizedException();
@@ -51,7 +53,12 @@ public class ReissueTokenServiceImpl implements ReissueTokenService {
 
         refreshTokenRepository.save(updatedToken);
 
-        response.setHeader("Authorization", "Bearer " + newAccessToken);
+        Cookie accessCookie = new Cookie("accessToken", newAccessToken);
+        accessCookie.setHttpOnly(true);
+        accessCookie.setSecure(false);
+        accessCookie.setPath("/");
+        accessCookie.setMaxAge(60 * 60 * 24);
+        response.addCookie(accessCookie);
 
         Cookie refreshCookie = new Cookie("refreshToken", newRefreshToken);
         refreshCookie.setHttpOnly(true);
@@ -59,6 +66,7 @@ public class ReissueTokenServiceImpl implements ReissueTokenService {
         refreshCookie.setPath("/");
         refreshCookie.setMaxAge(60 * 60 * 24 * 7);
         response.addCookie(refreshCookie);
+
 
         return new TokenResponse(
                 newAccessToken,
