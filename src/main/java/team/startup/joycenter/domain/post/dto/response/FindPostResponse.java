@@ -1,6 +1,6 @@
 package team.startup.joycenter.domain.post.dto.response;
 
-import team.startup.joycenter.domain.attachments.constant.AttachmentsType;
+import team.startup.joycenter.domain.attachments.entity.constant.AttachmentsType;
 
 import java.time.LocalDateTime;
 import java.util.List;
