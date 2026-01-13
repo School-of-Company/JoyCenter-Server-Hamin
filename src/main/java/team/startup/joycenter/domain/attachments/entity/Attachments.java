@@ -1,11 +1,8 @@
-package team.startup.joycenter.domain.attachments;
+package team.startup.joycenter.domain.attachments.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import team.startup.joycenter.domain.attachments.constant.AttachmentsType;
+import lombok.*;
+import team.startup.joycenter.domain.attachments.entity.constant.AttachmentsType;
 import team.startup.joycenter.domain.post.entity.Post;
 
 @Entity
@@ -13,6 +10,7 @@ import team.startup.joycenter.domain.post.entity.Post;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
+@Setter
 @Builder
 public class Attachments {
 
@@ -31,4 +29,10 @@ public class Attachments {
     @Enumerated(EnumType.STRING)
     @Column(name = "attachments_type")
     private AttachmentsType attachmentsType;
+
+    @Column(name = "image_order")
+    private Integer imageOrder;
+
+    @Column(name = "s3key", nullable = false)
+    private String s3Key;
 }
