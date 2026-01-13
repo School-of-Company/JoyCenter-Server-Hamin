@@ -27,8 +27,8 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @GetMapping("/{postId}")
-    public ResponseEntity<FindPostResponse> findPost(@PathVariable("postId") Long postId) {
+    @GetMapping("/{post_id}")
+    public ResponseEntity<FindPostResponse> findPost(@PathVariable("post_id") Long postId) {
         FindPostResponse response = findPostService.execute(postId);
         return ResponseEntity.ok(response);
     }

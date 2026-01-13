@@ -43,3 +43,13 @@ app:
   cookie:
     secure: false
     same-site: Lax
+
+cloud:
+  aws:
+    credentials:
+      access-key: ${AWS_ACCESS_KEY}
+      secret-key: ${AWS_SECRET_KEY}
+    region:
+      static: ${AWS_STATIC}
+    s3:
+      bucket: ${AWS_BUCKET}
