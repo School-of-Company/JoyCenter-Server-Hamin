@@ -1,6 +1,7 @@
 package team.startup.joycenter.global.s3.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class UploadService {
 
@@ -42,7 +44,12 @@ public class UploadService {
             CompletableFuture<PutObjectResponse> responseFuture =
                     s3AsyncClient.putObject(putObjectRequest, requestBody);
 
-            return responseFuture.thenApply(response -> {
+            return responseFuture.handle((resp, ex) -> {
+                if (ex != null) {
+                    log.error("S3 업로드 실패 bucket={}, key={}", bucket, uploadFileName, ex);
+                    throw new AttachmentsUploadFailedException();
+                }
+
                 String url = String.format(
                         "https://%s.s3.%s.amazonaws.com/%s",
                         bucket,
