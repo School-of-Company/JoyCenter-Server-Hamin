@@ -58,10 +58,17 @@ public class SecurityConfig {
                                         "/oauth2/**",
                                         "/login/**"
                                 ).permitAll()
+                                // auth
                                 .requestMatchers(HttpMethod.PATCH, "/api/auth/reissue").permitAll()
+
+                                // post
                                 .requestMatchers(HttpMethod.POST, "/api/post").authenticated()
-                                .requestMatchers(HttpMethod.GET, "/api/post/{postId}").authenticated()
+                                .requestMatchers(HttpMethod.GET, "/api/post/{post_id}").authenticated()
                                 .requestMatchers(HttpMethod.GET, "/api/post/all").permitAll()
+
+                                // attachments
+                                .requestMatchers(HttpMethod.POST, "/api/attachments").authenticated()
+                                .requestMatchers(HttpMethod.DELETE, "/api/attachments/{attachments_id}").authenticated()
                                 .anyRequest()
                                 .denyAll()
 
