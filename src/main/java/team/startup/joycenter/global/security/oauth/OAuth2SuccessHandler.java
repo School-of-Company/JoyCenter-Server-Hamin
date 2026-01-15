@@ -61,13 +61,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
                 .token(refreshToken)
                 .build());
 
-        ResponseCookie accessCookie = ResponseCookie.from("accessToken", accessToken)
-                .httpOnly(true)
-                .secure(cookieSecure)
-                .path("/")
-                .maxAge(60 * 60 * 24)
-                .sameSite(sameSite)
-                .build();
+        response.setHeader("Authorization", "Bearer " + accessToken);
 
         ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", refreshToken)
                 .httpOnly(true)
@@ -77,7 +71,6 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
                 .sameSite(sameSite)
                 .build();
 
-        response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
         response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
 
         response.sendRedirect(REDIRECT_URI);

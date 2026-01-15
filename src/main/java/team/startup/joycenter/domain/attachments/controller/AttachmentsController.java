@@ -26,8 +26,8 @@ public class AttachmentsController {
 
     }
 
-    @DeleteMapping("/{attachments_id}")
-    public ResponseEntity<Void> deleteAttachments(@PathVariable("attachments_id") Long AttachmentsId) {
+    @DeleteMapping("/{attachmentsId}")
+    public ResponseEntity<Void> deleteAttachments(@PathVariable("attachmentsId") Long AttachmentsId) {
         deleteAttachmentsService.execute(AttachmentsId);
         return ResponseEntity.noContent().build();
     }
