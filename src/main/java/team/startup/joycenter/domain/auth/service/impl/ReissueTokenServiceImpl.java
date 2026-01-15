@@ -53,12 +53,7 @@ public class ReissueTokenServiceImpl implements ReissueTokenService {
 
         refreshTokenRepository.save(updatedToken);
 
-        Cookie accessCookie = new Cookie("accessToken", newAccessToken);
-        accessCookie.setHttpOnly(true);
-        accessCookie.setSecure(false);
-        accessCookie.setPath("/");
-        accessCookie.setMaxAge(60 * 60 * 24);
-        response.addCookie(accessCookie);
+        response.setHeader("Authorization", "Bearer " + newAccessToken);
 
         Cookie refreshCookie = new Cookie("refreshToken", newRefreshToken);
         refreshCookie.setHttpOnly(true);

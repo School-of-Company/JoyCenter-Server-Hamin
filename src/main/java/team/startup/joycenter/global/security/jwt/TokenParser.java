@@ -51,16 +51,6 @@ public class TokenParser {
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_TYPE)) {
             return bearerToken.substring(BEARER_TYPE.length());
         }
-        return getCookieValue(request, "accessToken");
-    }
-
-    private String getCookieValue(HttpServletRequest request, String name) {
-        Cookie[] cookies = request.getCookies();
-        if (cookies == null) return null;
-
-        for (Cookie c : cookies) {
-            if (name.equals(c.getName())) return c.getValue();
-        }
         return null;
     }
 }
