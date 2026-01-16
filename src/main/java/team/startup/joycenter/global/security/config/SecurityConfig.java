@@ -56,7 +56,10 @@ public class SecurityConfig {
                                         "/favicon.ico",
                                         "/error",
                                         "/oauth2/**",
-                                        "/login/**"
+                                        "/login/**",
+                                        "/swagger-ui/**",
+                                        "/v3/api-docs/**",
+                                        "/swagger-ui.html"
                                 ).permitAll()
                                 // auth
                                 .requestMatchers(HttpMethod.PATCH, "/api/auth/reissue").permitAll()
