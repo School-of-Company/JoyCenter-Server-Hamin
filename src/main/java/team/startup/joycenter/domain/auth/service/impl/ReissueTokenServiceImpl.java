@@ -65,7 +65,7 @@ public class ReissueTokenServiceImpl implements ReissueTokenService {
 
         return new TokenResponse(
                 newAccessToken,
-                null,
+                newRefreshToken,
                 LocalDateTime.now().plusSeconds(jwtProvider.getAccessTokenTime()),
                 LocalDateTime.now().plusSeconds(jwtProvider.getRefreshTokenTime())
         );
