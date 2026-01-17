@@ -18,6 +18,7 @@ public enum ErrorCode {
     ATTACHMENTS_UPLOAD_FAILED(500, "첨부파일 업로드에 실패했습니다."),
     ATTACHMENTS_DELETE_FAILED(500, "첨부파일 삭제에 실패했습니다."),
 
+    NOT_POST_OWNER(403, "게시글 작성자가 아닙니다."),
     NOT_FOUND_POST(404, "존재하지 않는 게시글입니다.");
 
     private final int status;
