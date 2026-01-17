@@ -27,7 +27,7 @@ public class Attachments {
     private String attachmentsUrl;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "attachments_type")
+    @Column(name = "attachments_type", nullable = false)
     private AttachmentsType attachmentsType;
 
     @Column(name = "image_order")

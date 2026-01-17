@@ -5,7 +5,7 @@ import team.startup.joycenter.domain.post.entity.constant.BlockType;
 
 import java.util.List;
 
-public record CreatePostRequest(
+public record UpdatePostRequest(
         @NotNull String title,
         @NotNull List<BlockRequest> blocks
 ) {
