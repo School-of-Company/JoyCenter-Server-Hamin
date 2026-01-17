@@ -17,6 +17,7 @@ import team.startup.joycenter.domain.post.service.FindAllPostService;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -31,9 +32,51 @@ public class FindAllPostServiceImpl implements FindAllPostService {
         Pageable pageable = PageRequest.of(page, size, sort.toSpringSort());
         Page<Post> posts = postRepository.findAll(pageable);
 
-        List<FindAllPostResponse.Item> content = createThumbs(posts);
+        List<FindAllPostResponse.Item> items = createItems(posts);
+        FindAllPostResponse.PageInfo pageInfo = createPageInfo(posts);
 
-        FindAllPostResponse.PageInfo pageInfo = new FindAllPostResponse.PageInfo(
+        return new FindAllPostResponse(items, pageInfo);
+    }
+
+    private List<FindAllPostResponse.Item> createItems(Page<Post> posts) {
+        Map<Long, Attachments> thumbnailMap = getThumbnailMap(posts);
+
+        return posts.getContent().stream()
+                .map(post -> {
+                    Attachments thumbnail = thumbnailMap.get(post.getId());
+
+                    FindAllPostResponse.Thumbnail thumbnailInfo = (thumbnail == null)
+                            ? new FindAllPostResponse.Thumbnail(null, null)
+                            : new FindAllPostResponse.Thumbnail(thumbnail.getId(), thumbnail.getAttachmentsUrl());
+
+                    return new FindAllPostResponse.Item(
+                            post.getId(),
+                            post.getTitle(),
+                            new FindAllPostResponse.Member(post.getAuthor().getId(), post.getAuthorName()),
+                            thumbnailInfo
+                    );
+                })
+                .toList();
+    }
+
+    private Map<Long, Attachments> getThumbnailMap(Page<Post> posts) {
+        List<Long> postIds = posts.getContent().stream()
+                .map(Post::getId)
+                .toList();
+
+        List<Attachments> thumbnails = attachmentsRepository
+                .findAllByPostIdInAndAttachmentsTypeOrderByPostIdAscImageOrderAsc(postIds, AttachmentsType.IMAGE);
+
+        return thumbnails.stream()
+                .collect(Collectors.toMap(
+                        attachment -> attachment.getPost().getId(),
+                        attachment -> attachment,
+                        (existing, replacement) -> existing
+                ));
+    }
+
+    private FindAllPostResponse.PageInfo createPageInfo(Page<Post> posts) {
+        return new FindAllPostResponse.PageInfo(
                 posts.getNumber(),
                 posts.getSize(),
                 posts.getTotalElements(),
@@ -41,38 +84,5 @@ public class FindAllPostServiceImpl implements FindAllPostService {
                 posts.hasNext(),
                 posts.hasPrevious()
         );
-
-        return new FindAllPostResponse(content, pageInfo);
-    }
-
-    private List<FindAllPostResponse.Item> createThumbs(Page<Post> posts) {
-        List<Long> postIds = posts.getContent().stream()
-                .map(Post::getId)
-                .toList();
-
-        List<Attachments> thumbs = attachmentsRepository.findAllByPostIdInAndAttachmentsTypeOrderByPostIdAscImageOrderAsc(postIds, AttachmentsType.IMAGE);
-        Map<Long, Attachments> thumbMap = new java.util.HashMap<>();
-
-        for (Attachments a : thumbs) {
-            thumbMap.putIfAbsent(a.getPost().getId(), a);
-        }
-
-        List<FindAllPostResponse.Item> content = posts.getContent().stream()
-                .map(post -> {
-                    Attachments a = thumbMap.get(post.getId());
-
-                    FindAllPostResponse.Thumbnail thumb =
-                            (a == null) ? new FindAllPostResponse.Thumbnail(null, null)
-                                    : new FindAllPostResponse.Thumbnail(a.getId(), a.getAttachmentsUrl());
-
-                    return new FindAllPostResponse.Item(
-                            post.getId(),
-                            post.getTitle(),
-                            new FindAllPostResponse.Member(post.getAuthor().getId(), post.getAuthorName()),
-                            thumb
-                    );
-                })
-                .toList();
-        return content;
     }
 }
