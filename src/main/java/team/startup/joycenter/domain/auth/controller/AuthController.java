@@ -25,8 +25,7 @@ public class AuthController {
     @Operation(
             summary = "OAuth 로그인",
             description = """
-                    프론트에서 받은 authorization code와 redirectUri를 서버로 전달하면,
-                    서버가 provider 토큰 교환 + userinfo 조회 후 토큰을 발급합니다.
+                    Authentication Code와 Redirect URI를 통해 OAuth 인증을 처리하고, 토큰을 발급해줍니다.
                     """
     )
     @ApiResponses({
