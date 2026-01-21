@@ -6,14 +6,12 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import team.startup.joycenter.domain.auth.dto.request.OAuthRequest;
 import team.startup.joycenter.domain.auth.dto.response.TokenResponse;
+import team.startup.joycenter.domain.auth.service.OAuthService;
 import team.startup.joycenter.domain.auth.service.ReissueTokenService;
 
 @RestController
@@ -21,7 +19,28 @@ import team.startup.joycenter.domain.auth.service.ReissueTokenService;
 @RequestMapping("/api/auth")
 public class AuthController {
 
+    private final OAuthService oAuthService;
     private final ReissueTokenService reissueTokenService;
+
+    @Operation(
+            summary = "OAuth 로그인",
+            description = """
+                    Authentication Code와 Redirect URI를 통해 OAuth 인증을 처리하고, 토큰을 발급해줍니다.
+                    """
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "로그인/회원가입 성공",
+                    content = @Content(schema = @Schema(implementation = TokenResponse.class))
+            ),
+            @ApiResponse(responseCode = "401", description = "인증 실패", content = @Content),
+    })
+    @PostMapping
+    public ResponseEntity<TokenResponse> oauth(@RequestBody OAuthRequest request) {
+        TokenResponse response = oAuthService.execute(request);
+        return ResponseEntity.ok(response);
+    }
 
     @Operation(
             summary = "토큰 재발급",
@@ -39,8 +58,8 @@ public class AuthController {
                     required = true,
                     example = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
             )
-            @RequestHeader("RefreshToken")String refreshToken, HttpServletResponse response) {
-        TokenResponse tokenResponse = reissueTokenService.execute(refreshToken, response);
+            @RequestHeader("RefreshToken")String refreshToken) {
+        TokenResponse tokenResponse = reissueTokenService.execute(refreshToken);
         return ResponseEntity.ok(tokenResponse);
     }
 }
