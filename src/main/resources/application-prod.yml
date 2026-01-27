@@ -6,7 +6,7 @@ spring:
     url: ${DB_URL:?DB_URL is required}
     username: ${DB_USERNAME:?DB_USERNAME is required}
     password: ${DB_PASSWORD:?DB_PASSWORD is required}
-    driver-class-name: ${DB_DIALECT}
+    driver-class-name: ${DB_DRIVER_CLASS_NAME}
 
   data:
     redis:
