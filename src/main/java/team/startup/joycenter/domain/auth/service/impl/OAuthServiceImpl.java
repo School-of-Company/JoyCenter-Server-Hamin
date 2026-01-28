@@ -48,17 +48,19 @@ public class OAuthServiceImpl implements OAuthService {
             throw new Oauth2AuthorizationFailedException();
         }
 
+        String redirectUri = clientRegistration.getRedirectUri();
+
         OAuth2AuthorizationRequest authorizationRequest = OAuth2AuthorizationRequest
                 .authorizationCode()
                 .clientId(clientRegistration.getClientId())
                 .authorizationUri(clientRegistration.getProviderDetails().getAuthorizationUri())
-                .redirectUri(request.redirectUri())
+                .redirectUri(redirectUri)
                 .scopes(clientRegistration.getScopes())
                 .build();
 
         OAuth2AuthorizationResponse authorizationResponse = OAuth2AuthorizationResponse
                 .success(decodedCode)
-                .redirectUri(request.redirectUri())
+                .redirectUri(redirectUri)
                 .build();
 
         OAuth2AuthorizationExchange exchange = new OAuth2AuthorizationExchange(authorizationRequest, authorizationResponse);
