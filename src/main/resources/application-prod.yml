@@ -17,6 +17,11 @@ spring:
     hibernate:
       ddl-auto: ${DDL_AUTO:validate}
 
+jwt:
+  access-secret: ${JWT_ACCESS_SECRET}
+  refresh-secret: ${JWT_REFRESH_SECRET}
+
+
 logging:
   level:
     org.hibernate.SQL: info
