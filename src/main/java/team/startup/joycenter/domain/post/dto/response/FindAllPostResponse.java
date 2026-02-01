@@ -2,6 +2,7 @@ package team.startup.joycenter.domain.post.dto.response;
 
 import lombok.Builder;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Builder
@@ -12,6 +13,7 @@ public record FindAllPostResponse(
     public record Item(
             Long id,
             String title,
+            LocalDateTime createdAt,
             Member member,
             Thumbnail thumbnail
     ) {}
