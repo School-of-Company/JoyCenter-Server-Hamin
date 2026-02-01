@@ -52,6 +52,7 @@ public class FindAllPostServiceImpl implements FindAllPostService {
                     return new FindAllPostResponse.Item(
                             post.getId(),
                             post.getTitle(),
+                            post.getCreatedAt(),
                             new FindAllPostResponse.Member(post.getAuthor().getId(), post.getAuthorName()),
                             thumbnailInfo
                     );
