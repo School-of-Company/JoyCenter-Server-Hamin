@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.unit.DataSize;
 import org.springframework.web.multipart.MultipartFile;
 import team.startup.joycenter.domain.attachments.dto.UploadResult;
 import team.startup.joycenter.domain.attachments.dto.response.UploadAttachmentsResponse;
@@ -28,7 +29,7 @@ public class UploadAttachmentsServiceImpl implements UploadAttachmentsService {
     private final AttachmentsRepository attachmentsRepository;
 
     @Value("${spring.servlet.multipart.max-file-size}")
-    private long maxFileSize;
+    private DataSize maxFileSize;
 
     @Override
     @Transactional
@@ -52,7 +53,7 @@ public class UploadAttachmentsServiceImpl implements UploadAttachmentsService {
     }
 
     private UploadResult uploadFile(MultipartFile file) {
-        if (file.getSize() > maxFileSize) {
+        if (file.getSize() > maxFileSize.toBytes()) {
             throw new AttachmentsFileSizeExceededException();
         }
 
