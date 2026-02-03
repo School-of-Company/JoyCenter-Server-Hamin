@@ -5,6 +5,6 @@ import team.startup.joycenter.domain.auth.entity.RefreshToken;
 
 import java.util.Optional;
 
-public interface RefreshTokenRepository extends CrudRepository<RefreshToken, String> {
+public interface RefreshTokenRepository extends CrudRepository<RefreshToken, Long> {
     Optional<RefreshToken> findByMemberId(Long memberId);
 }
