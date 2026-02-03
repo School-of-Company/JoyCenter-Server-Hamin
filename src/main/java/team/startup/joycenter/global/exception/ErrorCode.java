@@ -17,6 +17,7 @@ public enum ErrorCode {
     NOT_FOUND_MEMBER(404, "존재하지 않는 사용자입니다."),
 
     NOT_FOUND_ATTACHMENTS(404, "존재하지 않는 첨부파일입니다."),
+    ATTACHMENTS_FILE_SIZE_EXCEEDED(413, "파일 크기가 300MB를 초과했습니다."),
     ATTACHMENTS_UPLOAD_FAILED(500, "첨부파일 업로드에 실패했습니다."),
     ATTACHMENTS_DELETE_FAILED(500, "첨부파일 삭제에 실패했습니다."),
 

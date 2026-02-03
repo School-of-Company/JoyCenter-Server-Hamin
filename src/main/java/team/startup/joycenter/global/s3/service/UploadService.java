@@ -8,12 +8,9 @@ import org.springframework.stereotype.Service;
 import software.amazon.awssdk.core.async.AsyncRequestBody;
 import software.amazon.awssdk.services.s3.S3AsyncClient;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
-import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 import team.startup.joycenter.domain.attachments.dto.UploadResult;
 import team.startup.joycenter.domain.attachments.exception.AttachmentsUploadFailedException;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -31,38 +28,36 @@ public class UploadService {
     private final S3AsyncClient s3AsyncClient;
 
     @Async
-    public CompletableFuture<UploadResult> execute(String fileName, InputStream inputStream) {
+    public CompletableFuture<UploadResult> execute(String fileName, byte[] fileBytes) {
         String uploadFileName = UUID.randomUUID() + "/" + fileName;
 
         try {
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                     .bucket(bucket)
                     .key(uploadFileName)
+                    .contentLength((long) fileBytes.length)
                     .build();
 
-            AsyncRequestBody requestBody = AsyncRequestBody.fromBytes(inputStream.readAllBytes());
-            CompletableFuture<PutObjectResponse> responseFuture =
-                    s3AsyncClient.putObject(putObjectRequest, requestBody);
+            AsyncRequestBody requestBody = AsyncRequestBody.fromBytes(fileBytes);
 
-            return responseFuture.handle((resp, ex) -> {
-                if (ex != null) {
-                    log.error("S3 업로드 실패 bucket={}, key={}", bucket, uploadFileName, ex);
-                    throw new AttachmentsUploadFailedException();
-                }
+            return s3AsyncClient.putObject(putObjectRequest, requestBody)
+                    .handle((resp, ex) -> {
+                        if (ex != null) {
+                            log.error("S3 업로드 실패 bucket={}, key={}", bucket, uploadFileName, ex);
+                            throw new AttachmentsUploadFailedException();
+                        }
 
-                String url = String.format(
-                        "https://%s.s3.%s.amazonaws.com/%s",
-                        bucket,
-                        region,
-                        uploadFileName
-                );
+                        String url = String.format(
+                                "https://%s.s3.%s.amazonaws.com/%s",
+                                bucket, region, uploadFileName
+                        );
 
-                return new UploadResult(uploadFileName, url);
-            });
+                        return new UploadResult(uploadFileName, url);
+                    });
 
-        } catch (IOException e) {
+        } catch (Exception e) {
+            log.error("S3 업로드 준비 실패", e);
             throw new AttachmentsUploadFailedException();
         }
     }
-
 }

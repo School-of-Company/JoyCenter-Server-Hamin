@@ -2,6 +2,11 @@ spring:
   application:
     name: joycenter
 
+  servlet:
+    multipart:
+      max-file-size: 300MB
+      max-request-size: 1GB
+
   jpa:
     open-in-view: false
     hibernate:
@@ -46,4 +51,3 @@ cloud:
       static: ${AWS_STATIC}
     s3:
       bucket: ${AWS_BUCKET}
-
