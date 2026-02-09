@@ -9,9 +9,9 @@ import software.amazon.awssdk.services.s3.S3AsyncClient;
 import software.amazon.awssdk.services.s3.model.Delete;
 import software.amazon.awssdk.services.s3.model.DeleteObjectsRequest;
 import software.amazon.awssdk.services.s3.model.ObjectIdentifier;
-import team.startup.joycenter.domain.attachments.exception.AttachmentsDeleteFailedException;
+import team.startup.joycenter.global.s3.dto.DeleteAllResult;
 
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -26,9 +26,9 @@ public class DeleteAllService {
     private final S3AsyncClient s3AsyncClient;
 
     @Async
-    public CompletableFuture<Void> execute(List<String> s3Keys) {
+    public CompletableFuture<DeleteAllResult> execute(List<String> s3Keys) {
         if (s3Keys == null || s3Keys.isEmpty()) {
-            return CompletableFuture.completedFuture(null);
+            return CompletableFuture.completedFuture(new DeleteAllResult(List.of(), List.of()));
         }
 
         List<ObjectIdentifier> objects = s3Keys.stream()
@@ -46,17 +46,23 @@ public class DeleteAllService {
                 .build();
 
         return s3AsyncClient.deleteObjects(request)
-                .thenAccept(response -> {
-                    List<?> errors = response.errors();
+                .thenApply(response -> {
+                    var errors = response.errors();
+                    Set<String> failedSet = new HashSet<>();
+
                     if (errors != null && !errors.isEmpty()) {
-                        log.error("S3 파일 일부 삭제 실패: {}", errors);
-                        throw new AttachmentsDeleteFailedException();
+                        for (var err : errors) {
+                            failedSet.add(err.key());
+                        }
                     }
-                    log.debug("S3 파일 전체 삭제 성공: {}", s3Keys);
-                })
-                .exceptionally(ex -> {
-                    log.error("S3 파일 전체 삭제 실패: {}", s3Keys, ex);
-                    throw new AttachmentsDeleteFailedException();
+
+                    List<String> failed = new ArrayList<>(failedSet);
+                    List<String> success = s3Keys.stream()
+                            .filter(k -> !failedSet.contains(k))
+                            .toList();
+
+                    return new DeleteAllResult(success, failed);
                 });
+
     }
 }
