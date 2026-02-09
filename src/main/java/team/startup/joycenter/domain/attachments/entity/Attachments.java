@@ -2,8 +2,12 @@ package team.startup.joycenter.domain.attachments.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import team.startup.joycenter.domain.attachments.entity.constant.AttachmentsType;
 import team.startup.joycenter.domain.post.entity.Post;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "attachments")
@@ -12,6 +16,7 @@ import team.startup.joycenter.domain.post.entity.Post;
 @Getter
 @Setter
 @Builder
+@EntityListeners(AuditingEntityListener.class)
 public class Attachments {
 
     @Id
@@ -35,4 +40,8 @@ public class Attachments {
 
     @Column(name = "s3key", nullable = false)
     private String s3Key;
+
+    @CreatedDate
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
 }
