@@ -42,7 +42,6 @@ jobs:
           push: true
           tags: ${{ env.IMAGE_NAME }}:latest
 
-      # docker-compose.yml을 서버로 전송
       - name: docker-compose.yml 서버 전송
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -64,23 +63,13 @@ jobs:
           port: ${{ secrets.SERVER_PORT }}
           envs: ENV_FILE
           script: |
-            # 배포 디렉토리 생성
             mkdir -p ~/joycenter-server
-
-            # .env 파일 갱신
             printf '%s' "$ENV_FILE" > ~/joycenter-server/.env && chmod 600 ~/joycenter-server/.env
-
-            # 최신 이미지 pull
             docker pull ${{ env.IMAGE_NAME }}:latest
-
-            # docker-compose로 컨테이너 실행
             cd ~/joycenter-server
             GITHUB_REPOSITORY_OWNER=${{ github.repository_owner }} docker compose up -d --remove-orphans
-
-            # 사용하지 않는 이전 이미지 정리
             docker image prune -f
 
-      # 배포 성공 시 Discord 알림
       - name: Discord 알림 (성공)
         if: ${{ success() }}
         uses: sarisia/actions-status-discord@v1
@@ -92,7 +81,6 @@ jobs:
           color: 65280
           username: 'JoyCenter-bot'
 
-      # 배포 실패 시 Discord 알림
       - name: Discord 알림 (실패)
         if: ${{ failure() }}
         uses: sarisia/actions-status-discord@v1
